@@ -1,0 +1,8 @@
+language: bash
+dist: trusty
+sudo: required
+services:
+  - docker
+
+script:
+  - $TRAVIS_BUILD_DIR/ci-scripts/test_shell.sh
