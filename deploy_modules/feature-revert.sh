@@ -2,4 +2,4 @@
 
 # Deploy module: feature revert.
 
-t drush $1 -- fra -y
+t drush "$1" -- fra -y
