@@ -28,7 +28,7 @@ fi
 
 date | tee -a "$LOGFILE"
 t env:deploy "$SITE" --updatedb --cc
-unset 'ARGS[${#ARGS[@]}-1]'
+unset "ARGS[${#ARGS[@]}-1]"
 
 ## Invoke deployment modules, if any.
 for MODULE in "${ARGS[@]}"

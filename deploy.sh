@@ -38,7 +38,7 @@ function module_list {
   echo -e  "${BGCYAN}                                                                  ${RESTORE}"
   echo -e "${BGLCYAN}  $TITLE                                                          ${RESTORE}"
   echo -e  "${BGCYAN}"
-  ls "$SCRIPT_DIR"/deploy_modules | sed 's/.sh//'
+  find "$SCRIPT_DIR"/deploy_modules -type f -printf "%f\n" | sed 's/.sh//'
   echo -e "${RESTORE}"
 }
 
