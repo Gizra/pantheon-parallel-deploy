@@ -9,12 +9,6 @@ source "$SCRIPT_DIR/helper-functions.sh"
 
 ## Checking requirements
 
-if ! hash drush 2>/dev/null; then
-  echo -e "${RED}Drush executable is not available ${RESTORE}"
-  echo "http://docs.drush.org/en/master/install/"
-  exit 1
-fi
-
 if ! hash terminus 2>/dev/null; then
   echo -e "${RED}Terminus executable is not available ${RESTORE}"
   echo "https://pantheon.io/docs/terminus/install/"
