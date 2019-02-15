@@ -122,6 +122,27 @@ then
   readarray EXCLUDE_SITES < "$EXCLUDE"
 fi
 
+## Get config for the organization / tag
+if [[ -f .pantheon-parallel-deploy ]];
+then
+  source .pantheon-parallel-deploy
+elif [[ -f ~/.pantheon-parallel-deploy ]];
+then
+  source ~/.pantheon-parallel-deploy
+fi
+
+if [ -z "$ORG" ];
+then
+  echo "Specify the organization"
+  read -r ORG
+fi
+
+if [ -z "$TAG" ];
+then
+  echo "Specify the tag (optional)"
+  read -r TAG
+fi
+
 SITES=()
 for ID in $(terminus org:site:list $ORG --tag=$TAG --format=csv --fields=name | tail -n +2);
 do
