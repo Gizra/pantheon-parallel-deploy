@@ -25,6 +25,7 @@ function element_exists_in_array() {
   element=${1}
   shift
   local elements=("$@")
+  # shellcheck disable=SC2068
   for i in ${elements[@]}; do
     if [ "$i" == "$element" ] ; then
       return 0
