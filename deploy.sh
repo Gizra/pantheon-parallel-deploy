@@ -22,8 +22,10 @@ if ! hash parallel 2>/dev/null; then
 fi
 
 function element_exists_in_array() {
-  elements=${1}
-  element=${2}
+  element=${1}
+  shift
+  local elements=("$@")
+  # shellcheck disable=SC2068
   for i in ${elements[@]}; do
     if [ "$i" == "$element" ] ; then
       return 0
@@ -122,10 +124,57 @@ then
   readarray EXCLUDE_SITES < "$EXCLUDE"
 fi
 
+## Get config for the organization / tag
+if [[ -f .pantheon-parallel-deploy ]];
+then
+  source .pantheon-parallel-deploy
+elif [[ -f ~/.pantheon-parallel-deploy ]];
+then
+  source ~/.pantheon-parallel-deploy
+fi
+
+if [ -z "$ORG" ];
+then
+  HINT1=$(fill_string_spaces "To avoid interaction, create .pantheon-parallel-deploy" 61)
+  HINT2=$(fill_string_spaces "in this directory or in home directory with this content:" 61)
+  HINT3=$(fill_string_spaces "ORG=organization" 61)
+  HINT4=$(fill_string_spaces "TAG=tag" 61)
+  echo
+  echo -e "${BGLCYAN}  $HINT1                                                          ${RESTORE}"
+  echo -e  "${BGCYAN}  $HINT2                                                          ${RESTORE}"
+  echo -e  "${BGCYAN}  $HINT3                                                          ${RESTORE}"
+  echo -e  "${BGCYAN}  $HINT4                                                          ${RESTORE}"
+  echo "Specify the Pantheon organization (https://pantheon.io/docs/organizations/):"
+  read -r ORG
+fi
+
+if [ -z "$TAG" ];
+then
+  echo "Specify the Pantheon tag (https://pantheon.io/docs/organization-dashboard/):"
+  echo "For non-organization scenarios, this simply filters by site name"
+  read -r TAG
+fi
+
+if [ -z "$ORG" ] && [ -z "$TAG" ];
+then
+  echo -e "${RED}Either the tag or the organization is mandatory.${RESTORE}"
+  exit 1
+fi
+
+if [ -z "$TAG" ];
+then
+  SITELIST=$(terminus org:site:list "$ORG" --format=csv --fields=name | tail -n +2)
+elif [ -z "$ORG" ];
+then
+  SITELIST=$(terminus site:list --name="$TAG" --format=csv --fields=name | tail -n +2)
+else
+  SITELIST=$(terminus org:site:list "$ORG" --tag="$TAG" --format=csv --fields=name | tail -n +2)
+fi
+
 SITES=()
-for ID in $(terminus org:site:list $ORG --tag=$TAG --format=csv --fields=name | tail -n +2);
+for ID in $SITELIST
 do
-  if element_exists_in_array "${EXCLUDE_SITES[@]}" "$ID";
+  if element_exists_in_array "$ID" "${EXCLUDE_SITES[@]}";
   then
     echo "$ID is excluded manually from the deployment."
     continue
