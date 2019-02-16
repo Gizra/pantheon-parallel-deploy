@@ -41,6 +41,13 @@ function module_list {
   echo -e "${BGLCYAN}  $TITLE                                                          ${RESTORE}"
   echo -e  "${BGCYAN}"
   find "$SCRIPT_DIR"/deploy_modules -type f -printf "%f\n" | sed 's/.sh//'
+  if [[ ! "$SCRIPT_DIR"/deploy_modules -ef "./deploy_modules" ]];
+  then
+    if [ -d "./deploy_modules" ]
+    then
+      find ./deploy_modules -type f -printf "%f\n" | sed 's/.sh//'
+    fi
+  fi
   echo -e "${RESTORE}"
 }
 
@@ -112,6 +119,9 @@ do
   if [[ -f "$SCRIPT_DIR/deploy_modules/$i.sh" ]]
   then
     DEPLOY_MODULES+=("$SCRIPT_DIR/deploy_modules/$i.sh")
+  elif [[ -f "./deploy_modules/$i.sh" ]]
+  then
+    DEPLOY_MODULES+=("./deploy_modules/$i.sh")
   else
     echo "Non-existing module: $i"
     exit 1
